@@ -1,0 +1,22 @@
+# See https://atom.io/docs/latest/creating-a-package#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Toggle tree-view-git-projects'
+      'command': 'tree-view-git-projects:toggle'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'tree-view-git-projects'
+      'submenu': [
+        {
+          'label': 'Toggle'
+          'command': 'tree-view-git-projects:toggle'
+        }
+      ]
+    ]
+  }
+]

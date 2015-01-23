@@ -1,2 +1,5 @@
-# atom-switch-git-project-tree-view-on-tab
-Switches projects to match the currently focused tab and reveals the file in tree-view in Atom.io editor.
+# tree-view-git-projects package
+
+A short description of your package.
+
+![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
