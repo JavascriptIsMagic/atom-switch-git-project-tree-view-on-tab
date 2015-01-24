@@ -1,16 +1,11 @@
 {
   "name": "tree-view-git-projects",
   "main": "./lib/tree-view-git-projects",
-  "version": "0.0.0",
-  "description": "A short description of your package",
-  "activationCommands": {
-    "atom-workspace": "tree-view-git-projects:toggle"
-  },
-  "repository": "https://github.com/atom/tree-view-git-projects",
-  "license": "MIT",
+  "version": "0.1.0",
+  "description": "Automatically updates the tree-view to be the root of the active tab's git repository.",
+  "repository": "https://github.com/javascriptismagic/tree-view-git-projects",
+  "license": "Public Domain <Unlicense.org>",
   "engines": {
     "atom": ">0.50.0"
-  },
-  "dependencies": {
   }
 }

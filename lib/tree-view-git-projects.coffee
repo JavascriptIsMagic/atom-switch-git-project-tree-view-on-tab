@@ -1,18 +1,22 @@
 fs = require 'fs'
+path = require 'path'
+
 module.exports =
-  activate: (state) ->
+  activate: ->
     atom.workspace.observePanes (pane) =>
       pane.observeActiveItem (item) =>
         if item?.getPath
-          @gitPath '' + item.getPath?(), (path) =>
-            console.log 'PATH FOUND: ', path
-  gitPath: (path, callback) ->
-    path = path.replace /[^\\\/]*[\\\/]?$/i, ''
-    unless path.length
-      callback ''
-    else
-      fs.exists path + '.git', (exists) =>
-        unless exists
-          @gitPath path, callback
+          @gitDirectory '' + item.getPath?(), (directory) =>
+            if directory and directory isnt atom.project.getPaths()[0]
+              atom.project.setPaths [directory]
+            atom.packages.getActivePackage('tree-view')?.mainModule?.treeView?.revealActiveFile?()
+  gitDirectory: (directory, callback) ->
+    directory = directory.replace /[^\\\/]*[\\\/]?$/i, ''
+    if directory
+      fs.exists directory + '.git', (exists) =>
+        if exists
+          callback path.resolve directory
         else
-          callback path
+          @gitDirectory directory, callback
+    else
+      callback ''
