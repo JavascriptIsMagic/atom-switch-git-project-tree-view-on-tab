@@ -3,7 +3,7 @@ path = require 'path'
 
 module.exports =
   activate: ->
-    atom.workspace.observePanes (pane) =>
+    atom.workspace.observeActivePane (pane) =>
       pane.observeActiveItem (item) =>
         if item?.getPath
           @gitDirectory '' + item.getPath?(), (directory) =>
