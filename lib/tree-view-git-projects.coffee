@@ -10,6 +10,7 @@ module.exports =
             if directory and directory isnt atom.project.getPaths()[0]
               atom.project.setPaths [directory]
             atom.packages.getActivePackage('tree-view')?.mainModule?.treeView?.revealActiveFile?()
+    atom.commands.add 'atom-workspace', 'tree-view-git-projects:upper-directory', => @upperDirectory()
   gitDirectory: (directory, callback) ->
     directory = directory.replace /[^\\\/]*[\\\/]?$/i, ''
     if directory
@@ -20,3 +21,6 @@ module.exports =
           @gitDirectory directory, callback
     else
       callback ''
+  upperDirectory: ->
+    up = path.dirname atom.project.getPaths()[0]
+    atom.project.setPaths [up]

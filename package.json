@@ -7,5 +7,6 @@
   "license": "Public Domain <Unlicense.org>",
   "engines": {
     "atom": ">0.50.0"
-  }
+  },
+  "activationEvents": ["tree-view-git-projects:upper-directory"]
 }
