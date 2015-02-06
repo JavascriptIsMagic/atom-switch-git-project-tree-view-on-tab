@@ -19,14 +19,13 @@ module.exports =
               atom.project.setPaths [directory]
             atom.packages.getActivePackage('tree-view')?.mainModule?.treeView?.revealActiveFile?()
   findProjectRoot: (directory, callback) ->
-    if @findByList.length
-      directory = path.resolve "#{directory}".replace /[^\\\/]*[\\\/]*$/, ''
-      if directory
-        @isProjectRoot directory, (isRoot) =>
-          if isRoot
-            callback directory
-          else
-            @findProjectRoot directory, callback
+    directory = path.resolve "#{directory}".replace /[^\\\/]*[\\\/]*$/, ''
+    if directory
+      @isProjectRoot directory, (isRoot) =>
+        if isRoot
+          callback directory
+        else
+          @findProjectRoot directory, callback
   isProjectRoot: (directory, callback) ->
     completed = 0
     done = no
