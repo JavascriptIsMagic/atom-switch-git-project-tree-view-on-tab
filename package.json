@@ -1,11 +1,15 @@
 {
   "name": "tree-view-git-projects",
-  "main": "./lib/tree-view-git-projects",
+  "main": "./lib/tree-view-git-projects.js",
   "version": "0.2.2",
   "description": "Automatically updates the tree-view to be the root of the active tab's git repository.",
   "repository": "https://github.com/javascriptismagic/tree-view-git-projects",
   "license": "Public Domain <Unlicense.org>",
   "engines": {
-    "atom": ">0.50.0"
+    "atom": ">=0.182.0"
+  },
+  "devDependencies": {
+    "cake-gulp": "0",
+    "coffee-script": ">=1.9"
   }
 }
