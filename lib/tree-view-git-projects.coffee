@@ -8,6 +8,12 @@ exists = (filepath) ->
     fs.exists filepath, (exists) ->
       resolve exists
 
+uniqueStringArray = (stringArray) ->
+  unique = {}
+  for string in stringArray
+    unique[string] = yes
+  Object.keys unique
+
 module.exports =
   config:
     findByList:
@@ -19,11 +25,16 @@ module.exports =
       type: 'boolean'
       title: 'Automatically Reveal active tab in Tree View'
       default: true
+    multiRoot:
+      type: 'boolean'
+      title: 'Keep multiple project roots in the Tree View.'
+      description: 'Disable this if you like the old behavior of only keeping a single root directory.'
+      default: true
   activate: ->
     atom.config.observe 'tree-view-git-projects.findByList', (findByList) =>
       @findByList = "#{findByList}".split '|'
-    atom.config.observe 'tree-view-git-projects.autoReveal', (autoReveal) =>
-      @autoReveal = autoReveal
+    atom.config.observe 'tree-view-git-projects.autoReveal', (@autoReveal) =>
+    atom.config.observe 'tree-view-git-projects.multiRoot', (@multiRoot) =>
     atom.workspace.observeActivePane (pane) =>
       pane.observeActiveItem (item) =>
         co =>
@@ -32,7 +43,10 @@ module.exports =
             if directory
               directory = path.resolve directory
               if directory isnt path.resolve atom.project.getPaths()[0]
-                atom.project.setPaths [directory]
+                atom.project.setPaths if @multiRoot
+                    uniqueStringArray [directory].concat atom.project.getPaths()
+                  else
+                    [directory]
             if @autoReveal
               treeView = atom.packages.getActivePackage('tree-view')?.mainModule?.treeView
               treeView?.revealActiveFile?()
