@@ -1,6 +1,13 @@
 fs = require 'fs'
 path = require 'path'
 
+co = require 'co'
+
+exists = (filepath) ->
+  new Promise (resolve) ->
+    fs.exists filepath, (exists) ->
+      resolve exists
+
 module.exports =
   config:
     findByList:
@@ -19,8 +26,9 @@ module.exports =
       @autoReveal = autoReveal
     atom.workspace.observeActivePane (pane) =>
       pane.observeActiveItem (item) =>
-        if item?.getPath
-          @findProjectRoot item.getPath?(), (directory) =>
+        co =>
+          if item?.getPath
+            directory = yield @findProjectRoot item.getPath()
             if directory
               directory = path.resolve directory
               if directory isnt path.resolve atom.project.getPaths()[0]
@@ -29,27 +37,18 @@ module.exports =
               treeView = atom.packages.getActivePackage('tree-view')?.mainModule?.treeView
               treeView?.revealActiveFile?()
               treeView?.unfocus?()
-  findProjectRoot: (directory, callback) ->
-    directory = "#{directory}".replace /[^\\\/]*[\\\/]*$/, ''
-    if directory
-      @isProjectRoot directory, (isRoot) =>
-        if isRoot
-          callback directory
+  findProjectRoot: (directory) ->
+    co =>
+      directory = "#{directory}".replace /[^\\\/]*[\\\/]*$/, ''
+      if directory
+        if yield @isProjectRoot directory
+          directory
         else
-          @findProjectRoot directory, callback
-    else
-      callback ''
-  isProjectRoot: (directory, callback) ->
-    completed = 0
-    done = no
-    length = @findByList.length
-    for type in @findByList
-      fs.exists directory + '/' + type, (exists) =>
-        unless done
-          completed += 1
-          if exists
-            done = yes
-            callback yes
-          else if completed is length
-            done = yes
-            callback no
+          @findProjectRoot directory
+      else ''
+  isProjectRoot: (directory) ->
+    co =>
+      for type in @findByList
+        if yield exists "#{directory}/#{type}"
+          return yes
+      no
