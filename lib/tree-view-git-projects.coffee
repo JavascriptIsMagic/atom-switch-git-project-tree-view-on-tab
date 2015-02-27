@@ -14,6 +14,9 @@ uniqueStringArray = (stringArray) ->
     unique[string] = yes
   Object.keys unique
 
+alphabetizePaths = (a, b) ->
+  "#{a}".replace(/^.*[\\\/]/, '').toLowerCase().localeCompare("#{b}".replace(/^.*[\\\/]/, '').toLowerCase())
+
 module.exports =
   config:
     findByList:
@@ -25,6 +28,10 @@ module.exports =
       type: 'boolean'
       title: 'Automatically Reveal active tab in Tree View'
       default: true
+    alphabetizeRoots:
+      type: 'boolean'
+      title: 'Automatically Sort projects alphabetically in Tree View'
+      default: true
     multiRoot:
       type: 'boolean'
       title: 'Keep multiple project roots in the Tree View.'
@@ -35,6 +42,7 @@ module.exports =
       @findByList = "#{findByList}".split '|'
     atom.config.observe 'tree-view-git-projects.autoReveal', (@autoReveal) =>
     atom.config.observe 'tree-view-git-projects.multiRoot', (@multiRoot) =>
+    atom.config.observe 'tree-view-git-projects.alphabetizeRoots', (@alphabetizeRoots) =>
     atom.workspace.observeActivePane (pane) =>
       pane.observeActiveItem (item) =>
         co =>
@@ -44,7 +52,11 @@ module.exports =
               directory = path.resolve directory
               if directory isnt path.resolve atom.project.getPaths()[0]
                 atom.project.setPaths if @multiRoot
-                    uniqueStringArray [directory].concat atom.project.getPaths()
+                    roots = uniqueStringArray [directory].concat atom.project.getPaths()
+                    if @alphabetizeRoots
+                      roots.sort alphabetizePaths
+                    else
+                      roots
                   else
                     [directory]
             if @autoReveal
