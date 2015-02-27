@@ -8,8 +8,10 @@
   "engines": {
     "atom": ">=0.182.0"
   },
+  "dependencies": {
+    "co": "4"
+  },
   "devDependencies": {
-    "co": "4",
     "cake-gulp": "0",
     "coffee-script": ">=1.9"
   }
