@@ -8,11 +8,21 @@ exists = (filepath) ->
     fs.exists filepath, (exists) ->
       resolve exists
 
+# TODO: use cache parameter
+realpath = (filepath) ->
+  new Promise (resolve, reject) ->
+    fs.realpath filepath, (err, real) ->
+      if err then return reject(err)
+      resolve real
+
 uniqueStringArray = (stringArray) ->
   unique = {}
   for string in stringArray
     unique[string] = yes
   Object.keys unique
+
+getRealPaths = -> co ->
+  rootDirectory.realPath or (yield realpath(rootDirectory.path)) for rootDirectory in atom.project.rootDirectories
 
 alphabetizePaths = (a, b) ->
   "#{a}".replace(/^.*[\\\/]/, '').toLowerCase().localeCompare("#{b}".replace(/^.*[\\\/]/, '').toLowerCase())
@@ -52,7 +62,7 @@ module.exports =
               directory = path.resolve directory
               if directory isnt path.resolve atom.project.getPaths()[0]
                 atom.project.setPaths if @multiRoot
-                    roots = uniqueStringArray [directory].concat atom.project.getPaths()
+                    roots = uniqueStringArray [directory].concat(yield getRealPaths())
                     if @alphabetizeRoots
                       roots.sort alphabetizePaths
                     else
