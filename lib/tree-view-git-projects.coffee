@@ -66,7 +66,7 @@ module.exports =
             directory = yield @findProjectRoot item.getPath()
             if directory
               directory = path.resolve directory
-              if directory isnt path.resolve atom.project.getPaths()[0]
+              unless directory in _.map(atom.project.getPaths(), (p) -> path.resolve p)
                 setPaths if @multiRoot
                     roots = uniqueStringArray [directory].concat(yield getRealPaths())
                     if @alphabetizeRoots
