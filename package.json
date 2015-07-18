@@ -9,7 +9,8 @@
     "atom": ">=0.182.0"
   },
   "dependencies": {
-    "co": "4"
+    "co": "4",
+    "underscore-plus": "^1.6.6"
   },
   "devDependencies": {
     "cake-gulp": "0",

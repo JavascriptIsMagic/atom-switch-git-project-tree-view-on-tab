@@ -2,6 +2,7 @@ fs = require 'fs'
 path = require 'path'
 
 co = require 'co'
+_ = require 'underscore-plus'
 
 exists = (filepath) ->
   new Promise (resolve) ->
@@ -26,6 +27,11 @@ getRealPaths = -> co ->
 
 alphabetizePaths = (a, b) ->
   "#{a}".replace(/^.*[\\\/]/, '').toLowerCase().localeCompare("#{b}".replace(/^.*[\\\/]/, '').toLowerCase())
+
+setPaths = (newPaths) ->
+  oldPaths = atom.project.getPaths()
+  unless _.isEqual newPaths, oldPaths
+    atom.project.setPaths(newPaths)
 
 module.exports =
   config:
@@ -61,7 +67,7 @@ module.exports =
             if directory
               directory = path.resolve directory
               if directory isnt path.resolve atom.project.getPaths()[0]
-                atom.project.setPaths if @multiRoot
+                setPaths if @multiRoot
                     roots = uniqueStringArray [directory].concat(yield getRealPaths())
                     if @alphabetizeRoots
                       roots.sort alphabetizePaths
