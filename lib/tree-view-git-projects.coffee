@@ -2,11 +2,19 @@ fs = require 'fs'
 path = require 'path'
 
 co = require 'co'
+_ = require 'underscore-plus'
 
 exists = (filepath) ->
   new Promise (resolve) ->
     fs.exists filepath, (exists) ->
       resolve exists
+
+# TODO: use cache parameter
+realpath = (filepath) ->
+  new Promise (resolve, reject) ->
+    fs.realpath filepath, (err, real) ->
+      if err then return reject(err)
+      resolve real
 
 uniqueStringArray = (stringArray) ->
   unique = {}
@@ -14,8 +22,16 @@ uniqueStringArray = (stringArray) ->
     unique[string] = yes
   Object.keys unique
 
+getRealPaths = -> co ->
+  rootDirectory.realPath or (yield realpath(rootDirectory.path)) for rootDirectory in atom.project.rootDirectories
+
 alphabetizePaths = (a, b) ->
   "#{a}".replace(/^.*[\\\/]/, '').toLowerCase().localeCompare("#{b}".replace(/^.*[\\\/]/, '').toLowerCase())
+
+setPaths = (newPaths) ->
+  oldPaths = atom.project.getPaths()
+  unless _.isEqual newPaths, oldPaths
+    atom.project.setPaths(newPaths)
 
 module.exports =
   config:
@@ -50,9 +66,9 @@ module.exports =
             directory = yield @findProjectRoot item.getPath()
             if directory
               directory = path.resolve directory
-              if directory isnt path.resolve atom.project.getPaths()[0]
-                atom.project.setPaths if @multiRoot
-                    roots = uniqueStringArray [directory].concat atom.project.getPaths()
+              unless directory in _.map(atom.project.getPaths(), (p) -> path.resolve p)
+                setPaths if @multiRoot
+                    roots = uniqueStringArray [directory].concat(yield getRealPaths())
                     if @alphabetizeRoots
                       roots.sort alphabetizePaths
                     else
